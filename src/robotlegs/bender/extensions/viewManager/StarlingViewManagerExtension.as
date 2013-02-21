@@ -13,9 +13,9 @@ package robotlegs.bender.extensions.viewManager
 	import robotlegs.bender.extensions.viewManager.impl.StarlingContainerRegistry;
 	import robotlegs.bender.extensions.viewManager.impl.StarlingViewManager;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.IContextExtension;
+	import robotlegs.bender.framework.api.IExtension;
 
-	public class StarlingViewManagerExtension implements IContextExtension
+	public class StarlingViewManagerExtension implements IExtension
 	{
 
 		/*============================================================================*/
@@ -48,20 +48,20 @@ package robotlegs.bender.extensions.viewManager
 			// But you get your own View Manager
 			_injector.map(IStarlingViewManager).toSingleton(StarlingViewManager);
 			
-			context.lifecycle.whenInitializing(handleContextSelfInitialize);
-			context.lifecycle.whenDestroying(handleContextSelfDestroy);
+			context.whenInitializing(whenInitializing);
+			context.whenDestroying(whenDestroying);
 		}
 
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function handleContextSelfInitialize():void
+		private function whenInitializing():void
 		{
 			_viewManager = _injector.getInstance(IStarlingViewManager);
 		}
 
-		private function handleContextSelfDestroy():void
+		private function whenDestroying():void
 		{
 			_viewManager.removeAllHandlers();
 			_injector.unmap(IStarlingViewManager);

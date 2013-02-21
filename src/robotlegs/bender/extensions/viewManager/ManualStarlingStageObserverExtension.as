@@ -8,13 +8,13 @@
 package robotlegs.bender.extensions.viewManager
 {
 	import org.swiftsuspenders.Injector;
-	
 	import robotlegs.bender.extensions.viewManager.impl.StarlingContainerRegistry;
 	import robotlegs.bender.extensions.viewManager.impl.StarlingManualStageObserver;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.IContextExtension;
+	import robotlegs.bender.framework.api.IExtension;
+	import robotlegs.bender.framework.api.ILogger;
 
-	public class ManualStarlingStageObserverExtension implements IContextExtension
+	public class ManualStarlingStageObserverExtension implements IExtension
 	{
 
 		/*============================================================================*/
@@ -31,6 +31,8 @@ package robotlegs.bender.extensions.viewManager
 		/*============================================================================*/
 
 		private var _injector:Injector;
+		
+		private var _logger:ILogger;
 
 		/*============================================================================*/
 		/* Public Functions                                                           */
@@ -40,28 +42,32 @@ package robotlegs.bender.extensions.viewManager
 		{
 			_installCount++;
 			_injector = context.injector;
-			context.lifecycle.whenInitializing(handleContextSelfInitialize);
-			context.lifecycle.whenDestroying(handleContextSelfDestroy);
+			_logger = context.getLogger(this);
+			context.whenInitializing(whenInitializing);
+			context.whenDestroying(whenDestroying);
 		}
 
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function handleContextSelfInitialize():void
+		private function whenInitializing():void
 		{
-			if (_manualStageObserver == null)
+			// Hark, an actual Singleton!
+			if (!_manualStageObserver)
 			{
 				const containerRegistry:StarlingContainerRegistry = _injector.getInstance(StarlingContainerRegistry);
+				_logger.debug("Creating genuine ManualStageObserver Singleton");
 				_manualStageObserver = new StarlingManualStageObserver(containerRegistry);
 			}
 		}
 
-		private function handleContextSelfDestroy():void
+		private function whenDestroying():void
 		{
 			_installCount--;
 			if (_installCount == 0)
 			{
+				_logger.debug("Destroying genuine ManualStageObserver Singleton");
 				_manualStageObserver.destroy();
 				_manualStageObserver = null;
 			}

@@ -7,15 +7,20 @@
 
 package robotlegs.bender.extensions.modularity
 {
+	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
+	import org.hamcrest.object.instanceOf;
 	import org.swiftsuspenders.Injector;
-	
-	import robotlegs.bender.extensions.modularity.events.StarlingModularContextEvent;
+	import robotlegs.bender.extensions.contextView.StarlingContextView;
+	import robotlegs.bender.extensions.modularity.impl.StarlingContextViewBasedExistenceWatcher;
+	import robotlegs.bender.extensions.modularity.impl.StarlingModularContextEvent;
+	import robotlegs.bender.extensions.modularity.impl.StarlingViewManagerBasedExistenceWatcher;
+	import robotlegs.bender.extensions.viewManager.api.IViewManager;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.IContextExtension;
+	import robotlegs.bender.framework.api.IExtension;
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.bender.framework.impl.UID;
 	
-	import starling.display.DisplayObjectContainer;
 
 	/**
 	 * <p>This extension allows a context to inherit dependencies from a parent context,
@@ -23,7 +28,7 @@ package robotlegs.bender.extensions.modularity
 	 *
 	 * <p>It should be installed before context initialization.</p>
 	 */
-	public class StarlingModularityExtension implements IContextExtension
+	public class StarlingModularityExtension implements IExtension
 	{
 
 		/*============================================================================*/
@@ -40,7 +45,7 @@ package robotlegs.bender.extensions.modularity
 
 		private var _inherit:Boolean;
 
-		private var _export:Boolean;
+		private var _expose:Boolean;
 
 		private var _contextView:DisplayObjectContainer;
 
@@ -54,10 +59,10 @@ package robotlegs.bender.extensions.modularity
 		 * @param inherit Should this context inherit dependencies?
 		 * @param export Should this context expose its dependencies?
 		 */
-		public function StarlingModularityExtension(inherit:Boolean = true, export:Boolean = true)
+		public function StarlingModularityExtension(inherit:Boolean = true, expose:Boolean = true)
 		{
 			_inherit = inherit;
-			_export = export;
+			_expose = expose;
 		}
 
 		/*============================================================================*/
@@ -69,8 +74,8 @@ package robotlegs.bender.extensions.modularity
 			_context = context;
 			_injector = context.injector;
 			_logger = context.getLogger(this);
-			_context.lifecycle.beforeInitializing(handleContextPreInitialize);
-			_context.lifecycle.beforeDestroying(handleContextPreDestroy);
+			_context.addConfigHandler(instanceOf(StarlingContextView), handleContextView);
+			_context.beforeInitializing(beforeInitializing);
 		}
 
 		public function toString():String
@@ -81,40 +86,57 @@ package robotlegs.bender.extensions.modularity
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
-
-		private function handleContextPreInitialize():void
+		private function beforeInitializing():void
 		{
-			if (!_injector.satisfiesDirectly(DisplayObjectContainer))
-				throw new Error("This extension requires a DisplayObjectContainer to mapped.");
-
-			_contextView = _injector.getInstance(DisplayObjectContainer);
-			_inherit && broadcastExistence();
-			_export && addExistenceListener();
+			_contextView || _logger.error("Context has no ContextView, and ModularityExtension doesn't allow this.");
 		}
 
-		private function handleContextPreDestroy():void
+		private function handleContextView(contextView:StarlingContextView):void
 		{
-			_logger.debug("Removing modular context existence event listener...");
-			_export && _contextView.removeEventListener(StarlingModularContextEvent.CONTEXT_ADD, onContextAdd);
+			_contextView = contextView.view;
+			_expose && configureExistenceWatcher();
+			_inherit && configureExistenceBroadcaster();
 		}
 
-		private function broadcastExistence():void
+		private function configureExistenceWatcher():void
 		{
-			_logger.debug("Modular context configured to inherit. Broadcasting existence event...");
+			if (_injector.hasDirectMapping(IViewManager))
+			{
+				_logger.debug("Context has a ViewManager. Configuring view manager based context existence watcher...");
+				const viewManager:IViewManager = _injector.getInstance(IViewManager);
+				new StarlingViewManagerBasedExistenceWatcher(_context, viewManager);
+			}
+			else
+			{
+				_logger.debug("Context has a ContextView. Configuring context view based context existence watcher...");
+				new StarlingContextViewBasedExistenceWatcher(_context, _contextView);
+			}
+		}
+
+		private function configureExistenceBroadcaster():void
+		{
+			if (_contextView.stage)
+			{
+				broadcastContextExistence();
+			}
+			else
+			{
+				_logger.debug("Context view is not yet on stage. Waiting...");
+				_contextView.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			}
+		}
+
+		private function onAddedToStage(event:Event):void
+		{
+			_logger.debug("Context view is now on stage. Continuing...");
+			_contextView.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			broadcastContextExistence();
+		}
+
+		private function broadcastContextExistence():void
+		{
+			_logger.debug("Context configured to inherit. Broadcasting existence event...");
 			_contextView.dispatchEvent(new StarlingModularContextEvent(StarlingModularContextEvent.CONTEXT_ADD, _context));
-		}
-
-		private function addExistenceListener():void
-		{
-			_logger.debug("Modular context configured to export. Listening for existence events...");
-			_contextView.addEventListener(StarlingModularContextEvent.CONTEXT_ADD, onContextAdd);
-		}
-
-		private function onContextAdd(event:StarlingModularContextEvent):void
-		{
-			_logger.debug("Modular context existence message caught. Configuring child module...");
-			event.stopImmediatePropagation();
-			event.context.injector.parentInjector = _context.injector;
 		}
 	}
 }

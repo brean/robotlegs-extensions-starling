@@ -2,12 +2,11 @@ package robotlegs.bender.bundles.starling
 {
 	
 	import robotlegs.bender.bundles.shared.configs.StarlingContextViewListenerConfig;
-	import robotlegs.bender.extensions.commandMap.CommandMapExtension;
+    import robotlegs.bender.extensions.eventCommandMap.EventCommandMapExtension;
 	import robotlegs.bender.extensions.contextView.StarlingContextViewExtension;
-	import robotlegs.bender.extensions.eventCommandMap.EventCommandMapExtension;
 	import robotlegs.bender.extensions.eventDispatcher.EventDispatcherExtension;
 	import robotlegs.bender.extensions.localEventMap.LocalEventMapExtension;
-	import robotlegs.bender.extensions.logging.TraceLoggingExtension;
+	import robotlegs.bender.extensions.enhancedLogging.TraceLoggingExtension;
 	import robotlegs.bender.extensions.mediatorMap.StarlingMediatorMapExtension;
 	import robotlegs.bender.extensions.modularity.StarlingModularityExtension;
 	import robotlegs.bender.extensions.stageSync.StarlingStageSyncExtension;
@@ -15,19 +14,18 @@ package robotlegs.bender.bundles.starling
 	import robotlegs.bender.extensions.viewManager.StarlingStageObserverExtension;
 	import robotlegs.bender.extensions.viewManager.StarlingViewManagerExtension;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.IContextExtension;
+	import robotlegs.bender.framework.api.IBundle;
 	
-	public class StarlingBundle implements IContextExtension
+	public class StarlingBundle implements IBundle
 	{
 		public function extend(context:IContext):void
 		{
-			context.extend(
+			context.install(
 				TraceLoggingExtension,
 				StarlingContextViewExtension,
 				EventDispatcherExtension,
 				StarlingModularityExtension,
 				StarlingStageSyncExtension,
-				CommandMapExtension,
 				EventCommandMapExtension,
 				LocalEventMapExtension,
 				StarlingViewManagerExtension,

@@ -7,15 +7,15 @@
 
 package robotlegs.bender.extensions.stageSync
 {
+	import starling.display.DisplayObjectContainer;
+	import starling.events.Event;
 	import org.hamcrest.object.instanceOf;
-	
+	import robotlegs.bender.extensions.contextView.StarlingContextView;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.IContextExtension;
+	import robotlegs.bender.framework.api.IExtension;
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.bender.framework.impl.UID;
 	
-	import starling.display.DisplayObjectContainer;
-	import starling.events.Event;
 
 	/**
 	 * <p>This Extension waits for a DisplayObjectContainer to be added as a configuration,
@@ -23,7 +23,7 @@ package robotlegs.bender.extensions.stageSync
 	 *
 	 * <p>It should be installed before context initialization.</p>
 	 */
-	public class StarlingStageSyncExtension implements IContextExtension
+	public class StarlingStageSyncExtension implements IExtension
 	{
 
 		/*============================================================================*/
@@ -46,7 +46,9 @@ package robotlegs.bender.extensions.stageSync
 		{
 			_context = context;
 			_logger = context.getLogger(this);
-			_context.addConfigHandler(instanceOf(DisplayObjectContainer), handleContextView);
+			_context.addConfigHandler(
+				instanceOf(StarlingContextView),
+				handleContextView);
 		}
 
 		public function toString():String
@@ -58,9 +60,14 @@ package robotlegs.bender.extensions.stageSync
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function handleContextView(view:DisplayObjectContainer):void
+		private function handleContextView(contextView:StarlingContextView):void
 		{
-			_contextView = view;
+            if (_contextView)
+			{
+				_logger.warn('A contextView has already been installed, ignoring {0}', [contextView.view]);
+				return;
+			}
+			_contextView = contextView.view;
 			if (_contextView.stage)
 			{
 				initializeContext();

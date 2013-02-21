@@ -1,17 +1,19 @@
 //------------------------------------------------------------------------------
-//  Copyright (c) 2011 the original author or authors. All Rights Reserved. 
+//  Copyright (c) 2012 the original author or authors. All Rights Reserved. 
 // 
 //  NOTICE: You are permitted to use, modify, and distribute this file 
 //  in accordance with the terms of the license agreement accompanying it. 
 //------------------------------------------------------------------------------
 
-package robotlegs.bender.extensions.modularity.events
+package robotlegs.bender.extensions.modularity.impl
 {
-	
-	import robotlegs.bender.framework.api.IContext;
-	
 	import starling.events.Event;
+	import robotlegs.bender.framework.api.IContext;
 
+	/**
+	 * Module Context Event
+	 * @private
+	 */
 	public class StarlingModularContextEvent extends Event
 	{
 
@@ -29,6 +31,9 @@ package robotlegs.bender.extensions.modularity.events
 
 		private var _context:IContext;
 
+		/**
+		 * The context associated with this event
+		 */
 		public function get context():IContext
 		{
 			return _context;
@@ -38,6 +43,11 @@ package robotlegs.bender.extensions.modularity.events
 		/* Constructor                                                                */
 		/*============================================================================*/
 
+		/**
+		 * Creates a Module Context Event
+		 * @param type The event type
+		 * @param context The associated context
+		 */
 		public function StarlingModularContextEvent(type:String, context:IContext)
 		{
 			super(type, true);
@@ -47,6 +57,14 @@ package robotlegs.bender.extensions.modularity.events
 		/*============================================================================*/
 		/* Public Functions                                                           */
 		/*============================================================================*/
+
+		/**
+		 * @inheritDoc
+		 */
+		public function clone():Event
+		{
+			return new StarlingModularContextEvent(type, context);
+		}
 
 		override public function toString():String
 		{
