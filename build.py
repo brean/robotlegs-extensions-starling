@@ -9,6 +9,6 @@ import shutil
 
 sdk = flex.SDK('4.6.0 build 23201')
 
-sdk.swc('robotlegs-extension-starling-2.0.0b4', 
-        output='bin/robotlegs-extension-starling-2.0.0b4.swc', 
+sdk.swc('robotlegs-extension-starling-2.0.0b5', 
+        output='bin/robotlegs-extension-starling-2.0.0b5.swc', 
         external=[l[:-4] for l in os.listdir('libs/') if l.endswith('swc')])

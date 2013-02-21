@@ -8,10 +8,8 @@
 package robotlegs.bender.extensions.contextView
 {
 	import org.hamcrest.object.instanceOf;
-	
+	import org.swiftsuspenders.Injector;
 	import robotlegs.bender.framework.api.IContext;
-	import robotlegs.bender.framework.api.ILogger;
-	import robotlegs.bender.framework.impl.UID;
 	import robotlegs.bender.framework.api.IExtension;
 	import robotlegs.bender.framework.api.ILogger;
 	
@@ -30,9 +28,7 @@ package robotlegs.bender.extensions.contextView
 		/* Private Properties                                                         */
 		/*============================================================================*/
 
-		private const _uid:String = UID.create(StarlingContextViewExtension);
-
-		private var _context:IContext;
+		private var _injector:Injector;
 
 		private var _logger:ILogger;
 
@@ -40,28 +36,40 @@ package robotlegs.bender.extensions.contextView
 		/* Public Functions                                                           */
 		/*============================================================================*/
 
-		// todo: accept contextView via constructor and use that if provided
-
+		/**
+		 * @inheritDoc
+		 */
 		public function extend(context:IContext):void
 		{
-			_context = context;
+			_injector = context.injector;
 			_logger = context.getLogger(this);
-			_context.addConfigHandler(instanceOf(DisplayObjectContainer), handleContextView);
-		}
-
-		public function toString():String
-		{
-			return _uid;
+			context.addConfigHandler(instanceOf(StarlingContextView), handleContextView);
+			context.beforeInitializing(beforeInitializing);
 		}
 
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function handleContextView(view:DisplayObjectContainer):void
+		private function handleContextView(contextView:StarlingContextView):void
 		{
-			_logger.debug("Mapping provided DisplayObjectContainer as contextView...");
-			_context.injector.map(DisplayObjectContainer).toValue(view);
+			if (_injector.hasDirectMapping(StarlingContextView))
+			{
+				_logger.warn('A contextView has already been installed, ignoring {0}', [contextView.view]);
+			}
+			else
+			{
+				_logger.debug("Mapping {0} as contextView", [contextView.view]);
+				_injector.map(StarlingContextView).toValue(contextView);
+			}
+		}
+
+		private function beforeInitializing():void
+		{
+			if (!_injector.hasDirectMapping(StarlingContextView))
+			{
+				_logger.error("A ContextView must be installed if you install the ContextViewExtension.");
+			}
 		}
 	}
 }

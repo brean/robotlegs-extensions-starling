@@ -11,8 +11,8 @@ package robotlegs.bender.extensions.mediatorMap
 	
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMap;
-	import robotlegs.bender.extensions.mediatorMap.impl.MediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.impl.StarlingMediatorManager;
+	import robotlegs.bender.extensions.mediatorMap.impl.StarlingMediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.impl.StarlingMediatorMap;
 	import robotlegs.bender.extensions.viewManager.api.IStarlingViewHandler;
 	import robotlegs.bender.extensions.viewManager.api.IStarlingViewManager;
@@ -41,28 +41,19 @@ package robotlegs.bender.extensions.mediatorMap
 		public function extend(context:IContext):void
 		{
 			_injector = context.injector;
-			_injector.map(IStarlingMediatorFactory).toSingleton(MediatorFactory);
+			_injector.map(IStarlingMediatorFactory).toSingleton(StarlingMediatorFactory);
 			_injector.map(IStarlingMediatorMap).toSingleton(StarlingMediatorMap);
 			// todo: figure out why this is done as preInitialize
-			context.beforeInitializing(beforeInitializing);
-			context.beforeDestroying(beforeDestroying);
-			context.whenDestroying(whenDestroying);
+			context.beforeInitializing(beforeInitializing)
+				.beforeDestroying(beforeDestroying)
+				.whenDestroying(whenDestroying)
+				.afterDestroying(afterDestroying);
 		}
 
 		/*============================================================================*/
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-//		private function handleContextPreInitialize():void
-//		{
-//			_mediatorMap = _injector.getInstance(IStarlingMediatorMap);
-//			_mediatorManager = _injector.getInstance(StarlingMediatorManager);
-//			if (_injector.satisfiesDirectly(IStarlingViewManager))
-//			{
-//				_viewManager = _injector.getInstance(IStarlingViewManager);
-//				_viewManager.addViewHandler(_mediatorMap as IStarlingViewHandler);
-//			}
-//		}
 
 		private function beforeInitializing():void
 		{
@@ -97,6 +88,14 @@ package robotlegs.bender.extensions.mediatorMap
 			{
 				_injector.unmap(IStarlingMediatorFactory);
 			}
+		}
+		
+		private function afterDestroying():void
+		{
+			_injector = null;
+			_mediatorMap = null;
+			_viewManager = null;
+			_mediatorManager = null;
 		}
 	}
 }

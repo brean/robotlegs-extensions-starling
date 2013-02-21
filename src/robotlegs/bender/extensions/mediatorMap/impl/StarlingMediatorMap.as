@@ -7,8 +7,8 @@
 
 package robotlegs.bender.extensions.mediatorMap.impl
 {
+	import starling.display.DisplayObject;
 	import flash.utils.Dictionary;
-	
 	import robotlegs.bender.extensions.matching.ITypeMatcher;
 	import robotlegs.bender.extensions.matching.TypeMatcher;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
@@ -18,9 +18,8 @@ package robotlegs.bender.extensions.mediatorMap.impl
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorUnmapper;
 	import robotlegs.bender.extensions.viewManager.api.IStarlingViewHandler;
 	
-	import starling.display.DisplayObject;
 	
-	public class StarlingMediatorMap implements IStarlingMediatorMap, IStarlingViewHandler
+	public class StarlingMediatorMap implements IMediatorMap, IStarlingViewHandler
 	{
 		/*============================================================================*/
 		/* Private Properties                                                         */
@@ -48,39 +47,57 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Public Functions                                                           */
 		/*============================================================================*/
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function mapMatcher(matcher:ITypeMatcher):IMediatorMapper
 		{
 			return _mappers[matcher.createTypeFilter().descriptor] ||= createMapper(matcher);
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function map(type:Class):IMediatorMapper
 		{
-			const matcher:ITypeMatcher = new TypeMatcher().allOf(type);
-			return mapMatcher(matcher);
+			return mapMatcher(new TypeMatcher().allOf(type));
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function unmapMatcher(matcher:ITypeMatcher):IMediatorUnmapper
 		{
 			return _mappers[matcher.createTypeFilter().descriptor] || NULL_UNMAPPER;
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function unmap(type:Class):IMediatorUnmapper
 		{
-			const matcher:ITypeMatcher = new TypeMatcher().allOf(type);
-			return unmapMatcher(matcher);
+			return unmapMatcher(new TypeMatcher().allOf(type));
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function handleView(view:DisplayObject, type:Class):void
 		{
 			_handler.handleView(view, type);
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function mediate(item:Object):void
 		{
-			const type:Class = item.constructor;
-			_handler.handleItem(item, type);
+			_handler.handleItem(item, item.constructor as Class);
 		}
-		
+
+		/**
+		 * @inheritDoc
+		 */
 		public function unmediate(item:Object):void
 		{
 			_factory.removeMediators(item);

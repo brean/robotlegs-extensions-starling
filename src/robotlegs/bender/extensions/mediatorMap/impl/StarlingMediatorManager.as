@@ -9,13 +9,13 @@ package robotlegs.bender.extensions.mediatorMap.impl
 {
 	import starling.display.DisplayObject;
 	import starling.events.Event;
-	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
-	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMapping;
 	import robotlegs.bender.extensions.mediatorMap.api.StarlingMediatorFactoryEvent;
-	
 
+	/**
+	 * @private
+	 */
 	public class StarlingMediatorManager
 	{
 
@@ -84,32 +84,18 @@ package robotlegs.bender.extensions.mediatorMap.impl
 			// Watch this view for removal
 			displayObject.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
 
-			// Is this a UIComponent that needs to be initialized?
-			if (flexAvailable && (displayObject is UIComponentClass) && !displayObject['initialized'])
-			{
-				displayObject.addEventListener(CREATION_COMPLETE, function(e:Event):void
-				{
-					displayObject.removeEventListener(CREATION_COMPLETE, arguments.callee);
-					// ensure that we haven't been removed in the meantime
-					if (_factory.getMediator(displayObject, event.mapping))
-						initializeMediator(displayObject, mediator);
-				});
-			}
-			else
-			{
-				initializeMediator(displayObject, mediator);
-			}
+			initializeMediator(displayObject, mediator);
 		}
 
 		private function onMediatorRemove(event:StarlingMediatorFactoryEvent):void
 		{
-			const view:DisplayObject = event.mediatedItem as DisplayObject;
-			if (!view)
-				return;
-			view.removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
-			// note: as far as I know, the re-parenting issue does not exist with Flex 4+.
-			// question: should we bother handling re-parenting?
-			destroyMediator(event.mediator);
+			const displayObject:DisplayObject = event.mediatedItem as DisplayObject;
+
+			if (displayObject)
+				displayObject.removeEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+
+			if (event.mediator)
+				destroyMediator(event.mediator);
 		}
 
 		private function onRemovedFromStage(event:Event):void
