@@ -9,9 +9,9 @@ package robotlegs.bender.extensions.mediatorMap.impl
 {
 	import flash.utils.Dictionary;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorViewHandler;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMapping;
 	import robotlegs.bender.extensions.matching.ITypeFilter;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorFactory;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
 	import starling.display.DisplayObject;
 	
 	public class StarlingMediatorViewHandler implements IStarlingMediatorViewHandler
@@ -25,18 +25,18 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		
 		private var _knownMappings:Dictionary = new Dictionary(true);
 		
-		private var _factory:IMediatorFactory;
+		private var _factory:IStarlingMediatorFactory;
 		
 		/*============================================================================*/
 		/* Public Functions                                                           */
 		/*============================================================================*/
 		
-		public function StarlingMediatorViewHandler(factory:IMediatorFactory):void
+		public function StarlingMediatorViewHandler(factory:IStarlingMediatorFactory):void
 		{
 			_factory = factory;
 		}
 		
-		public function addMapping(mapping:IMediatorMapping):void
+		public function addMapping(mapping:IStarlingMediatorMapping):void
 		{
 			const index:int = _mappings.indexOf(mapping);
 			if (index > -1)
@@ -45,7 +45,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 			flushCache();
 		}
 		
-		public function removeMapping(mapping:IMediatorMapping):void
+		public function removeMapping(mapping:IStarlingMediatorMapping):void
 		{
 			const index:int = _mappings.indexOf(mapping);
 			if (index == -1)
@@ -79,7 +79,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		
 		private function getInterestedMappingsFor(view:Object, type:Class):Array
 		{
-			var mapping:IMediatorMapping;
+			var mapping:IStarlingMediatorMapping;
 			
 			// we've seen this type before and nobody was interested
 			if (_knownMappings[type] === false)

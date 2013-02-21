@@ -9,7 +9,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 {
 	import flash.utils.Dictionary;
 	import robotlegs.bender.extensions.matching.ITypeFilter;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMapping;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorViewHandler;
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorMapper;
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorMappingConfig;
@@ -57,7 +57,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function toMediator(mediatorClass:Class):IMediatorMappingConfig
 		{
-			const mapping:IMediatorMapping = _mappings[mediatorClass];
+			const mapping:IStarlingMediatorMapping = _mappings[mediatorClass];
 			return mapping
 				? overwriteMapping(mapping)
 				: createMapping(mediatorClass);
@@ -68,7 +68,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function fromMediator(mediatorClass:Class):void
 		{
-			const mapping:IMediatorMapping = _mappings[mediatorClass];
+			const mapping:IStarlingMediatorMapping = _mappings[mediatorClass];
 			mapping && deleteMapping(mapping);
 		}
 
@@ -77,7 +77,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		 */
 		public function fromAll():void
 		{
-			for each (var mapping:IMediatorMapping in _mappings)
+			for each (var mapping:IStarlingMediatorMapping in _mappings)
 			{
 				deleteMapping(mapping);
 			}
@@ -87,23 +87,23 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function createMapping(mediatorClass:Class):MediatorMapping
+		private function createMapping(mediatorClass:Class):StarlingMediatorMapping
 		{
-			const mapping:MediatorMapping = new MediatorMapping(_typeFilter, mediatorClass);
+			const mapping:StarlingMediatorMapping = new StarlingMediatorMapping(_typeFilter, mediatorClass);
 			_handler.addMapping(mapping);
 			_mappings[mediatorClass] = mapping;
 			_logger && _logger.debug('{0} mapped to {1}', [_typeFilter, mapping]);
 			return mapping;
 		}
 
-		private function deleteMapping(mapping:IMediatorMapping):void
+		private function deleteMapping(mapping:IStarlingMediatorMapping):void
 		{
 			_handler.removeMapping(mapping);
 			delete _mappings[mapping.mediatorClass];
 			_logger && _logger.debug('{0} unmapped from {1}', [_typeFilter, mapping]);
 		}
 
-		private function overwriteMapping(mapping:IMediatorMapping):IMediatorMappingConfig
+		private function overwriteMapping(mapping:IStarlingMediatorMapping):IMediatorMappingConfig
 		{
 			_logger && _logger.warn('{0} already mapped to {1}\n' +
 				'If you have overridden this mapping intentionally you can use "unmap()" ' +

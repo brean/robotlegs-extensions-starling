@@ -9,7 +9,7 @@ package robotlegs.bender.extensions.mediatorMap
 {
 	import org.swiftsuspenders.Injector;
 	
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorFactory;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMap;
 	import robotlegs.bender.extensions.mediatorMap.impl.MediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.impl.StarlingMediatorManager;
@@ -41,7 +41,7 @@ package robotlegs.bender.extensions.mediatorMap
 		public function extend(context:IContext):void
 		{
 			_injector = context.injector;
-			_injector.map(IMediatorFactory).toSingleton(MediatorFactory);
+			_injector.map(IStarlingMediatorFactory).toSingleton(MediatorFactory);
 			_injector.map(IStarlingMediatorMap).toSingleton(StarlingMediatorMap);
 			// todo: figure out why this is done as preInitialize
 			context.beforeInitializing(beforeInitializing);
@@ -77,7 +77,7 @@ package robotlegs.bender.extensions.mediatorMap
 
 		private function beforeDestroying():void
 		{
-			var mediatorFactory:IMediatorFactory = _injector.getInstance(IMediatorFactory);
+			var mediatorFactory:IStarlingMediatorFactory = _injector.getInstance(IStarlingMediatorFactory);
 			mediatorFactory.removeAllMediators();
 
 			if (_injector.satisfiesDirectly(IStarlingViewManager))
@@ -93,9 +93,9 @@ package robotlegs.bender.extensions.mediatorMap
 			{
 				_injector.unmap(IStarlingMediatorMap);
 			}
-			if (_injector.satisfiesDirectly(IMediatorFactory))
+			if (_injector.satisfiesDirectly(IStarlingMediatorFactory))
 			{
-				_injector.unmap(IMediatorFactory);
+				_injector.unmap(IStarlingMediatorFactory);
 			}
 		}
 	}

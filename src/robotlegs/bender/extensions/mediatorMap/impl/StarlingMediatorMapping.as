@@ -8,13 +8,13 @@
 package robotlegs.bender.extensions.mediatorMap.impl
 {
 	import robotlegs.bender.extensions.matching.ITypeFilter;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMapping;
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorMappingConfig;
 
 	/**
 	 * @private
 	 */
-	public class StarlingMediatorMapping implements IMediatorMapping, IMediatorMappingConfig
+	public class StarlingMediatorMapping implements IStarlingMediatorMapping, IMediatorMappingConfig
 	{
 
 		/*============================================================================*/

@@ -11,9 +11,9 @@ package robotlegs.bender.extensions.mediatorMap.impl
 	import starling.events.Event;
 	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorFactory;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMapping;
-	import robotlegs.bender.extensions.mediatorMap.api.MediatorFactoryEvent;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMapping;
+	import robotlegs.bender.extensions.mediatorMap.api.StarlingMediatorFactoryEvent;
 	
 
 	public class StarlingMediatorManager
@@ -35,17 +35,17 @@ package robotlegs.bender.extensions.mediatorMap.impl
 
 		private const _mappings:Dictionary = new Dictionary();
 
-		private var _factory:IMediatorFactory;
+		private var _factory:IStarlingMediatorFactory;
 
 		/*============================================================================*/
 		/* Constructor                                                                */
 		/*============================================================================*/
 
-		public function StarlingMediatorManager(factory:IMediatorFactory)
+		public function StarlingMediatorManager(factory:IStarlingMediatorFactory)
 		{
 			_factory = factory;
-			_factory.addEventListener(MediatorFactoryEvent.MEDIATOR_CREATE, onMediatorCreate);
-			_factory.addEventListener(MediatorFactoryEvent.MEDIATOR_REMOVE, onMediatorRemove);
+			_factory.addEventListener(StarlingMediatorFactoryEvent.MEDIATOR_CREATE, onMediatorCreate);
+			_factory.addEventListener(StarlingMediatorFactoryEvent.MEDIATOR_REMOVE, onMediatorRemove);
 		}
 
 		/*============================================================================*/
@@ -69,7 +69,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Private Functions                                                          */
 		/*============================================================================*/
 
-		private function onMediatorCreate(event:MediatorFactoryEvent):void
+		private function onMediatorCreate(event:StarlingMediatorFactoryEvent):void
 		{
 			const mediator:Object = event.mediator;
 			const displayObject:DisplayObject = event.mediatedItem as DisplayObject;
@@ -101,7 +101,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 			}
 		}
 
-		private function onMediatorRemove(event:MediatorFactoryEvent):void
+		private function onMediatorRemove(event:StarlingMediatorFactoryEvent):void
 		{
 			const view:DisplayObject = event.mediatedItem as DisplayObject;
 			if (!view)

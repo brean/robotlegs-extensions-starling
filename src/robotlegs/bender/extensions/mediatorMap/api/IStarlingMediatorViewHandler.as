@@ -11,9 +11,9 @@ package robotlegs.bender.extensions.mediatorMap.api
 
 	public interface IStarlingMediatorViewHandler extends IStarlingViewHandler
 	{
-		function addMapping(mapping:IMediatorMapping):void;
+		function addMapping(mapping:IStarlingMediatorMapping):void;
 
-		function removeMapping(mapping:IMediatorMapping):void;
+		function removeMapping(mapping:IStarlingMediatorMapping):void;
 		
 		function handleItem(item:Object, type:Class):void;
 	}

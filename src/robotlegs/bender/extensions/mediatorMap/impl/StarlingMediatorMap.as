@@ -11,7 +11,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 	
 	import robotlegs.bender.extensions.matching.ITypeMatcher;
 	import robotlegs.bender.extensions.matching.TypeMatcher;
-	import robotlegs.bender.extensions.mediatorMap.api.IMediatorFactory;
+	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorFactory;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorMap;
 	import robotlegs.bender.extensions.mediatorMap.api.IStarlingMediatorViewHandler;
 	import robotlegs.bender.extensions.mediatorMap.dsl.IMediatorMapper;
@@ -30,7 +30,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		
 		private var _handler:IStarlingMediatorViewHandler;
 		
-		private var _factory:IMediatorFactory;
+		private var _factory:IStarlingMediatorFactory;
 		
 		private const NULL_UNMAPPER:IMediatorUnmapper = new NullMediatorUnmapper();
 		
@@ -38,7 +38,7 @@ package robotlegs.bender.extensions.mediatorMap.impl
 		/* Constructor                                                                */
 		/*============================================================================*/
 		
-		public function StarlingMediatorMap(factory:IMediatorFactory, handler:IStarlingMediatorViewHandler = null)
+		public function StarlingMediatorMap(factory:IStarlingMediatorFactory, handler:IStarlingMediatorViewHandler = null)
 		{
 			_factory = factory;
 			_handler = handler || new StarlingMediatorViewHandler(_factory);
